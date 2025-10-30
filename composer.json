@@ -1,0 +1,15 @@
+{
+    "name": "mh828/api-query-terminal",
+    "autoload": {
+        "psr-4": {
+            "Mh828\\ApiQueryTerminal\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mahdi Hasanpour",
+            "email": "mh.hasnapour@gmail.com"
+        }
+    ],
+    "require": {}
+}

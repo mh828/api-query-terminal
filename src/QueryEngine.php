@@ -2,6 +2,8 @@
 
 namespace Mh828\ApiQueryTerminal;
 
+use Illuminate\Database\Eloquent\Model;
+
 class QueryEngine
 {
     private array $responseResult = [];
@@ -23,7 +25,9 @@ class QueryEngine
     {
         if (is_array($responseOption)) {
             if (is_array($response)) return array_filter($response, fn($key) => in_array($key, $responseOption), ARRAY_FILTER_USE_KEY);
+            else if ($response instanceof Model) return $response->only($responseOption);
         }
+
         return $response;
     }
 

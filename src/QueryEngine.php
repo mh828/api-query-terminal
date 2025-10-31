@@ -17,7 +17,7 @@ class QueryEngine
     {
         foreach ($input as $key => $option) {
             if (method_exists($this->entryPoint, $key))
-                $this->responseResult[$key] = $this->responseStandardize(call_user_func([$this->entryPoint, $key], []), ($option['response'] ?? null));
+                $this->responseResult[$key] = $this->responseStandardize(call_user_func([$this->entryPoint, $key], ...($option['arguments'] ?? [])), ($option['response'] ?? null));
         }
     }
 

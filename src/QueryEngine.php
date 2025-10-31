@@ -8,7 +8,7 @@ class QueryEngine
 {
     private array $responseResult = [];
 
-    public function __construct(public TypeInterface $entryPoint, public array $request)
+    public function __construct(public object $entryPoint, public array $request)
     {
         $this->processor($this->request);
     }

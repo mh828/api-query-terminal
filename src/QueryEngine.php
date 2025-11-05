@@ -10,14 +10,14 @@ class QueryEngine
 
     public function __construct(public object $entryPoint, public array $request)
     {
-        $this->processor($this->entryPoint, $this->request);
+        $this->processor($this->entryPoint, $this->request, $this->responseResult);
     }
 
-    private function processor(object $object, array $input)
+    private function processor(object $object, array $input, array &$result)
     {
         foreach ($input as $key => $option) {
             if (method_exists($object, $key))
-                $this->responseResult[$key] = $this->responseStandardize(call_user_func([$object, $key], ...($option['arguments'] ?? [])), array_keys($option['response'] ?? []));
+                $result[$key] = $this->responseStandardize(call_user_func([$object, $key], ...($option['arguments'] ?? [])), array_keys($option['response'] ?? []));
         }
     }
 

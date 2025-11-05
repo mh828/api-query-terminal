@@ -17,13 +17,13 @@ class QueryEngine
     {
         foreach ($input as $key => $option) {
             if (method_exists($this->entryPoint, $key))
-                $this->responseResult[$key] = $this->responseStandardize(call_user_func([$this->entryPoint, $key], ...($option['arguments'] ?? [])), ($option['response'] ?? null));
+                $this->responseResult[$key] = $this->responseStandardize(call_user_func([$this->entryPoint, $key], ...($option['arguments'] ?? [])), array_keys($option['response'] ?? []));
         }
     }
 
-    private function responseStandardize(mixed $response, ?array $responseOption)
+    private function responseStandardize(mixed $response, array $responseOption)
     {
-        if (is_array($responseOption)) {
+        if (!empty($responseOption)) {
             if (is_array($response)) return array_filter($response, fn($key) => in_array($key, $responseOption), ARRAY_FILTER_USE_KEY);
             else if ($response instanceof Model) return $response->only($responseOption);
         }

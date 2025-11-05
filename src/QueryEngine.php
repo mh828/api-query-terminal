@@ -3,6 +3,7 @@
 namespace Mh828\ApiQueryTerminal;
 
 use Illuminate\Database\Eloquent\Model;
+use function PHPUnit\Framework\isArray;
 
 class QueryEngine
 {
@@ -16,8 +17,15 @@ class QueryEngine
     private function processor(object $object, array $input, array &$result)
     {
         foreach ($input as $key => $option) {
-            if (method_exists($object, $key))
+            if (method_exists($object, $key)) {
                 $result[$key] = $this->responseStandardize(call_user_func([$object, $key], ...($option['arguments'] ?? [])), array_keys($option['response'] ?? []));
+                foreach ($result[$key] as $k=>$v){
+                    if(is_object($v)) {
+                        $result[$key][$k] = [];
+                        $this->processor($v, ($option['response'] ?? [])[$k] ?? [], $result[$key][$k]);
+                    }
+                }
+            }
         }
     }
 

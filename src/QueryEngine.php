@@ -18,9 +18,9 @@ class QueryEngine
 
     private function processor(object $object, array $input, array &$result)
     {
-        self::$process = ['object' => $object, 'option' => $input];
+        self::$process = ['object' => $object, 'options' => $input];
         request()->route()->setParameter('terminal_object', $object);
-        request()->route()->setParameter('terminal_option', $input);
+        request()->route()->setParameter('terminal_options', $input);
         foreach ($input as $key => $option) {
             if (method_exists($object, $key)) {
                 $result[$key] = $this->responseStandardize(App::call([$object, $key], ($option['arguments'] ?? [])), array_keys($option['response'] ?? []));
@@ -50,10 +50,20 @@ class QueryEngine
     }
 
     /**
-     * @return array{object:object,option:array}|null
+     * @return array{object:object,options:array}|null
      */
     public static function getProcess(): ?array
     {
         return self::$process;
+    }
+
+    public static function getProcessObject(): ?object
+    {
+        return self::getProcess()['object'] ?? null;
+    }
+
+    public static function getProcessOptions(): ?array
+    {
+        return self::getProcess()['options'] ?? null;
     }
 }

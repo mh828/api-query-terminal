@@ -9,6 +9,7 @@ use function PHPUnit\Framework\isArray;
 class QueryEngine
 {
     private array $responseResult = [];
+    private static ?array $process;
 
     public function __construct(public object $entryPoint, public array $request)
     {
@@ -17,6 +18,9 @@ class QueryEngine
 
     private function processor(object $object, array $input, array &$result)
     {
+        self::$process = ['object' => $object, 'option' => $input];
+        request()->route()->setParameter('terminal_object', $object);
+        request()->route()->setParameter('terminal_option', $input);
         foreach ($input as $key => $option) {
             if (method_exists($object, $key)) {
                 $result[$key] = $this->responseStandardize(App::call([$object, $key], ($option['arguments'] ?? [])), array_keys($option['response'] ?? []));
@@ -43,5 +47,13 @@ class QueryEngine
     public function response(): mixed
     {
         return $this->responseResult;
+    }
+
+    /**
+     * @return array{object:object,option:array}|null
+     */
+    public static function getProcess(): ?array
+    {
+        return self::$process;
     }
 }

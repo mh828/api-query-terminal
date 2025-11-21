@@ -25,8 +25,13 @@ class QueryEngine
             $methodName = $option['as'] ?? $key;
             if (method_exists($object, $methodName)) {
                 $result[$key] = $this->responseStandardize(App::call([$object, $methodName], ($option['arguments'] ?? [])),
-                    array_is_list($responseArray = ($option['response'] ?? [])) ? $responseArray : array_keys($responseArray));
-                if (is_array($result[$key]) || is_object($result[$key])) {
+                    array_is_list($responseArray = ($responses = $option['response'] ?? [])) ? $responseArray : array_keys($responseArray));
+                if (is_object($result[$key])) {
+                    $objectResult = [];
+                    $this->processor($result[$key], $responses, $objectResult);
+                    $result[$key] = $objectResult;
+                }
+                if (is_array($result[$key])) {
                     foreach ($result[$key] as $k => $v) {
                         if (is_object($v)) {
                             $result[$key][$k] = [];

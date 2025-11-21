@@ -23,7 +23,8 @@ class QueryEngine
         request()->route()->setParameter('terminal_options', $input);
         foreach ($input as $key => $option) {
             if (method_exists($object, $key)) {
-                $result[$key] = $this->responseStandardize(App::call([$object, $key], ($option['arguments'] ?? [])), array_keys($option['response'] ?? []));
+                $result[$key] = $this->responseStandardize(App::call([$object, $key], ($option['arguments'] ?? [])),
+                    array_is_list($responseArray = ($option['response'] ?? [])) ? $responseArray : array_keys($responseArray));
                 foreach ($result[$key] as $k => $v) {
                     if (is_object($v)) {
                         $result[$key][$k] = [];

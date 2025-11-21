@@ -22,10 +22,11 @@ class QueryEngine
         request()->route()->setParameter('terminal_object', $object);
         request()->route()->setParameter('terminal_options', $input);
         foreach ($input as $key => $option) {
-            if (method_exists($object, $key)) {
-                $result[$key] = $this->responseStandardize(App::call([$object, $key], ($option['arguments'] ?? [])),
+            $methodName = $option['as'] ?? $key;
+            if (method_exists($object, $methodName)) {
+                $result[$key] = $this->responseStandardize(App::call([$object, $methodName], ($option['arguments'] ?? [])),
                     array_is_list($responseArray = ($option['response'] ?? [])) ? $responseArray : array_keys($responseArray));
-                if(is_array($result[$key]) || is_object($result[$key])) {
+                if (is_array($result[$key]) || is_object($result[$key])) {
                     foreach ($result[$key] as $k => $v) {
                         if (is_object($v)) {
                             $result[$key][$k] = [];

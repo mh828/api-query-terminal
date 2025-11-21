@@ -22,6 +22,7 @@ class QueryEngine
         request()->route()->setParameter('terminal_object', $object);
         request()->route()->setParameter('terminal_options', $input);
         foreach ($input as $key => $option) {
+            $key = array_is_list($input) ? $option : $key;
             $methodName = $option['as'] ?? $key;
             if (method_exists($object, $methodName)) {
                 $result[$key] = $this->responseStandardize(App::call([$object, $methodName], ($option['arguments'] ?? [])),

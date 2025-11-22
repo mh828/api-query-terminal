@@ -10,6 +10,7 @@ use function PHPUnit\Framework\isArray;
 class QueryEngine
 {
     private array $responseResult = [];
+    private array $namespaces = [];
     private static ?array $process;
 
     public function __construct(public object $entryPoint, public array $request)
@@ -88,5 +89,28 @@ class QueryEngine
     public static function getProcessOptions(): ?array
     {
         return self::getProcess()['options'] ?? null;
+    }
+
+    public function setNamespace(...$namespaces): self
+    {
+        $this->namespaces = array_merge($this->namespaces, $namespaces);
+        return $this;
+    }
+
+    public function removeNamespaces(...$namespaces): self
+    {
+        $this->namespaces = array_values(array_filter($this->namespaces, fn($ns) => !in_array($ns, $namespaces)));
+        return $this;
+    }
+
+    public function resetNamespaces($namespaces = []): self
+    {
+        $this->namespaces = $namespaces;
+        return $this;
+    }
+
+    public function getNamespaces(): array
+    {
+        return $this->namespaces;
     }
 }

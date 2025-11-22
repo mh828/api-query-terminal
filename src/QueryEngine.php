@@ -13,13 +13,29 @@ class QueryEngine
     private array $namespaces = [];
     private static ?array $process;
 
-    public function __construct(public object $entryPoint, public array $request)
+    public function __construct(public ?object $entryPoint = null, public ?array $request = null)
     {
     }
 
-    public function startProcess(): void
+    /**
+     * @param object|null $entryPoint
+     */
+    public function setEntryPoint(?object $entryPoint): void
     {
-        $this->processor($this->entryPoint, $this->request, $this->responseResult);
+        $this->entryPoint = $entryPoint;
+    }
+
+    /**
+     * @param array|null $request
+     */
+    public function setRequest(?array $request): void
+    {
+        $this->request = $request;
+    }
+
+    public function startProcess(?object $entryPoint = null, ?array $request = null): void
+    {
+        $this->processor($entryPoint ?? $this->entryPoint, $request ?? $this->request, $this->responseResult);
     }
 
     private function processor(object $object, array $input, array &$result)

@@ -15,6 +15,10 @@ class QueryEngine
 
     public function __construct(public object $entryPoint, public array $request)
     {
+    }
+
+    public function startProcess(): void
+    {
         $this->processor($this->entryPoint, $this->request, $this->responseResult);
     }
 
@@ -26,9 +30,10 @@ class QueryEngine
         foreach ($input as $key => $option) {
             $key = array_is_list($input) ? $option : $key;
             $methodName = $option['as'] ?? $key;
-            if (method_exists($object, $methodName)) {
+            $callable = method_exists($object, $methodName) ? [$object, $methodName] : $this->findClassFromString($methodName);
+            if ($callable) {
                 try {
-                    $result[$key] = $this->responseStandardize(App::call([$object, $methodName], ($option['arguments'] ?? [])),
+                    $result[$key] = $this->responseStandardize(App::call($callable, ($option['arguments'] ?? [])),
                         array_is_list($responseArray = ($responses = $option['response'] ?? [])) ? $responseArray : array_keys($responseArray));
                     if (is_object($result[$key])) {
                         if (empty($responses) && is_a($result[$key], TypeInterface::class)) {
@@ -112,5 +117,15 @@ class QueryEngine
     public function getNamespaces(): array
     {
         return $this->namespaces;
+    }
+
+    protected function findClassFromString($classMethod): ?array
+    {
+        $class = str_replace('.', '\\', substr($classMethod, 0, $position = strrpos($classMethod, '.')));
+        $method = substr($classMethod, $position + 1);
+        foreach ($this->namespaces as $namespace) {
+            if (class_exists($nc = $namespace . '\\' . $class))
+                return [App::make($nc), $method];
+        }
     }
 }

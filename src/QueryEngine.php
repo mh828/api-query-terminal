@@ -50,6 +50,7 @@ class QueryEngine
             $callable = method_exists($object, $methodName) ? [$object, $methodName] : $this->findClassFromString($methodName);
             if ($callable) {
                 try {
+                    App::bind(ProcessOption::class, fn() => new ProcessOption($option));
                     $result[$key] = $this->responseStandardize(App::call($callable, ($option['arguments'] ?? [])),
                         array_is_list($responseArray = ($responses = $option['response'] ?? [])) ? $responseArray : array_keys($responseArray));
                     if (is_object($result[$key])) {

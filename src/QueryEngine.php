@@ -70,14 +70,12 @@ class QueryEngine
                             }
                         }
                     }
-                } catch (ValidationException $exception) {
-                    $result[$key] = [
-                        'status' => 'invalid',
-                        'code' => 422,
-                        'errors' => $exception->errors()
-                    ];
                 } catch (\Throwable $exception) {
                     $result[$key] = ['status' => 'invalid', 'code' => $exception->getCode(), 'errors' => $exception->getMessage()];
+                    if (is_a($exception, ValidationException::class)) {
+                        $result[$key]['code'] = $exception->status;
+                        $result[$key]['errors'] = $exception->errors();
+                    }
                 }
             }
         }

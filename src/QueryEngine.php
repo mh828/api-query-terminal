@@ -145,5 +145,6 @@ class QueryEngine
             if (class_exists($nc = $namespace . '\\' . $class))
                 return [App::make($nc), $method];
         }
+        return null;
     }
 }

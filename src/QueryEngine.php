@@ -143,9 +143,9 @@ class QueryEngine
         $class = str_replace('.', '\\', substr($classMethod, 0, $position = strrpos($classMethod, '.')));
         $method = substr($classMethod, $position + 1);
         foreach ($this->namespaces as $namespace) {
-            if ($this->objectsCache[$nc = $namespace . '\\' . $class] ?? null) return $this->objectsCache[$nc];
+            if ($this->objectsCache[$nc = $namespace . '\\' . $class] ?? null) return [$this->objectsCache[$nc], $method];
             if (class_exists($nc))
-                return $this->objectsCache[$nc] = [App::make($nc), $method];
+                return [$this->objectsCache[$nc] = App::make($nc), $method];
         }
         return null;
     }

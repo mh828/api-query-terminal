@@ -74,6 +74,8 @@ class QueryEngine
                         'code' => 422,
                         'errors' => $exception->errors()
                     ];
+                } catch (\Throwable $exception) {
+                    $result[$key] = ['status' => 'invalid', 'code' => $exception->getCode(), 'errors' => $exception->getMessage()];
                 }
             }
         }

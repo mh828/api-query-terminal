@@ -12,6 +12,7 @@ class QueryEngine
     private array $responseResult = [];
     private array $namespaces = [];
     private static ?array $process;
+    private array $objectsCache = [];
 
     public function __construct(public ?object $entryPoint = null, public ?array $request = null)
     {
@@ -142,8 +143,9 @@ class QueryEngine
         $class = str_replace('.', '\\', substr($classMethod, 0, $position = strrpos($classMethod, '.')));
         $method = substr($classMethod, $position + 1);
         foreach ($this->namespaces as $namespace) {
-            if (class_exists($nc = $namespace . '\\' . $class))
-                return [App::make($nc), $method];
+            if ($this->objectsCache[$nc = $namespace . '\\' . $class] ?? null) return $this->objectsCache[$nc];
+            if (class_exists($nc))
+                return $this->objectsCache[$nc] = [App::make($nc), $method];
         }
         return null;
     }

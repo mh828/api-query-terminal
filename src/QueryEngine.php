@@ -11,6 +11,7 @@ class QueryEngine
 {
     private array $responseResult = [];
     private array $namespaces = [];
+    private array $configuration = [];
     private static ?array $process;
     private array $objectsCache = [];
 
@@ -147,5 +148,16 @@ class QueryEngine
                 return [$this->objectsCache[$nc] = App::make($nc), $method];
         }
         return null;
+    }
+
+    public function setConfig($key, $value): self
+    {
+        $this->configuration[$key] = $value;
+        return $this;
+    }
+
+    public function getConfig($key)
+    {
+        return $this->configuration[$key] ?? null;
     }
 }

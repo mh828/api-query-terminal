@@ -9,6 +9,7 @@ use function PHPUnit\Framework\isArray;
 
 class QueryEngine
 {
+    const CONFIG__SUPPRESS_DEFAULT_EXCEPTIONS = '__suppress-default-exceptions';
     private array $responseResult = [];
     private array $namespaces = [];
     private array $configuration = [];
@@ -72,6 +73,8 @@ class QueryEngine
                         }
                     }
                 } catch (\Throwable $exception) {
+                    if ($this->configuration[self::CONFIG__SUPPRESS_DEFAULT_EXCEPTIONS] ?? null)
+                        return throw $exception;
                     $result[$key] = ['status' => 'invalid', 'code' => $exception->getCode(), 'errors' => $exception->getMessage()];
                     if (is_a($exception, ValidationException::class)) {
                         $result[$key]['code'] = $exception->status;
@@ -159,5 +162,12 @@ class QueryEngine
     public function getConfig($key)
     {
         return $this->configuration[$key] ?? null;
+    }
+
+    public function suppressDefaultExceptions($bool): self
+    {
+        if ($bool) $this->configuration[self::CONFIG__SUPPRESS_DEFAULT_EXCEPTIONS] = true;
+        if (!$bool && ($this->configuration[self::CONFIG__SUPPRESS_DEFAULT_EXCEPTIONS] ?? null)) unset($this->configuration[self::CONFIG__SUPPRESS_DEFAULT_EXCEPTIONS]);
+        return $this;
     }
 }

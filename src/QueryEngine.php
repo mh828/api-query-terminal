@@ -2,7 +2,9 @@
 
 namespace Mh828\ApiQueryTerminal;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Validation\ValidationException;
 use function PHPUnit\Framework\isArray;
@@ -15,9 +17,11 @@ class QueryEngine
     private array $configuration = [];
     private static ?array $process;
     private array $objectsCache = [];
+    public Collection $throwables;
 
     public function __construct(public ?object $entryPoint = null, public ?array $request = null)
     {
+        $this->throwables = new Collection([]);
     }
 
     /**
@@ -73,12 +77,17 @@ class QueryEngine
                         }
                     }
                 } catch (\Throwable $exception) {
+                    //track exceptions and errors
+                    $this->throwables->push($exception);
+                    //suppress default engine exception handler
                     if ($this->configuration[self::CONFIG__SUPPRESS_DEFAULT_EXCEPTIONS] ?? null)
                         return throw $exception;
                     $result[$key] = ['status' => 'invalid', 'code' => $exception->getCode(), 'errors' => $exception->getMessage()];
                     if (is_a($exception, ValidationException::class)) {
                         $result[$key]['code'] = $exception->status;
                         $result[$key]['errors'] = $exception->errors();
+                    } else if (is_a($exception, AuthorizationException::class)) {
+                        $result[$key]['code'] = 403;
                     }
                 }
             }

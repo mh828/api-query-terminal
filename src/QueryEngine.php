@@ -12,6 +12,8 @@ use function PHPUnit\Framework\isArray;
 class QueryEngine
 {
     const CONFIG__SUPPRESS_DEFAULT_EXCEPTIONS = '__suppress-default-exceptions';
+    const STATUS__SUCCESS = 'success';
+    const STATUS__FAILED = 'failed';
     private array $responseResult = [];
     private array $namespaces = [];
     private array $configuration = [];
@@ -76,13 +78,15 @@ class QueryEngine
                             }
                         }
                     }
+
+                    $result[$key] = ['status' => self::STATUS__SUCCESS, 'result' => $result[$key]];
                 } catch (\Throwable $exception) {
                     //track exceptions and errors
                     $this->throwables->push($exception);
                     //suppress default engine exception handler
                     if ($this->configuration[self::CONFIG__SUPPRESS_DEFAULT_EXCEPTIONS] ?? null)
                         return throw $exception;
-                    $result[$key] = ['status' => 'invalid', 'code' => $exception->getCode(), 'errors' => $exception->getMessage()];
+                    $result[$key] = ['status' => self::STATUS__FAILED, 'code' => $exception->getCode(), 'errors' => $exception->getMessage()];
                     if (is_a($exception, ValidationException::class)) {
                         $result[$key]['code'] = $exception->status;
                         $result[$key]['errors'] = $exception->errors();

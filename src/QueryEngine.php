@@ -67,7 +67,7 @@ class QueryEngine
                         } else {
                             $objectResult = [];
                             $this->processor($result[$key], $responses, $objectResult);
-                            $result[$key] = $objectResult;
+                            $result[$key] = $objectResult ?: $result[$key];
                         }
                     }
                     if (is_array($result[$key])) {

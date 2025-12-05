@@ -21,7 +21,7 @@ class QueryEngine
     private array $objectsCache = [];
     public Collection $throwables;
 
-    public function __construct(public ?object $entryPoint = null, public ?array $request = null)
+    public function __construct(public ?object $entryPoint = null, public ?array $request = null, public bool $debug = true)
     {
         $this->throwables = new Collection([]);
     }
@@ -92,6 +92,8 @@ class QueryEngine
                         $result[$key]['errors'] = $exception->errors();
                     } else if (is_a($exception, AuthorizationException::class)) {
                         $result[$key]['code'] = 403;
+                    } else {
+                        if ($this->debug) $result[$key]['trace'] = $exception->getTrace();
                     }
                 }
             }

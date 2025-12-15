@@ -55,7 +55,7 @@ class QueryEngine
         foreach ($input as $key => $option) {
             $key = array_is_list($input) ? $option : $key;
             $methodName = $option['as'] ?? $key;
-            $callable = method_exists($object, $methodName) ? [$object, $methodName] : $this->findClassFromString($methodName);
+            $callable = method_exists($object, $methodName) ? [$object, $methodName] : ($this->findClassFromString($methodName) ?? $this->findClassFromString($methodName . '.default'));
             if ($callable) {
                 try {
                     App::bind(ProcessOption::class, fn() => new ProcessOption($option));

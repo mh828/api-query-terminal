@@ -13,6 +13,8 @@
       "email": "mh.hasnapour@gmail.com"
     }
   ],
-  "require": {},
+  "require": {
+    "ext-pdo": "*"
+  },
   "minimum-stability": "stable"
 }

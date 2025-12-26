@@ -73,8 +73,9 @@ class QueryEngine
                     if (is_array($result[$key])) {
                         foreach ($result[$key] as $k => $v) {
                             if (is_object($v)) {
-                                $result[$key][$k] = [];
-                                $this->processor($v, ($option['response'] ?? [])[$k] ?? [], $result[$key][$k]);
+                                $temp = [];
+                                $this->processor($v, ($option['response'] ?? [])[$k] ?? [], $temp);
+                                $result[$key][$k] = !empty($temp) ? $temp : $v;
                             }
                         }
                     }

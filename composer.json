@@ -15,7 +15,9 @@
   ],
   "require": {
     "ext-pdo": "*",
-    "ext-intl": "*"
+    "ext-intl": "*",
+    "ext-fileinfo": "*",
+    "ext-gd": "*"
   },
   "minimum-stability": "stable"
 }
